@@ -1,7 +1,7 @@
 def allocate_resource(requests, resources):
     allocations = []
 
-    # HIGH priority requests first
+    # Process vulnerable requests first
     sorted_requests = sorted(
         requests,
         key=lambda r: r.get("vulnerable", False),
@@ -21,12 +21,15 @@ def allocate_resource(requests, resources):
                 "resource_type": resource_type,
                 "quantity": 0,
                 "status": "Pending",
-                "priority": "HIGH"
-                if request.get("vulnerable", False)
-                else "NORMAL"
+                "priority": (
+                    "HIGH"
+                    if request.get("vulnerable", False)
+                    else "NORMAL"
+                )
             })
             continue
 
+        # Get available resource quantity
         available = resources.get(resource_type, 0)
 
         # Full allocation
@@ -39,9 +42,11 @@ def allocate_resource(requests, resources):
                 "resource_type": resource_type,
                 "quantity": quantity,
                 "status": "Allocated",
-                "priority": "HIGH"
-                if request.get("vulnerable", False)
-                else "NORMAL"
+                "priority": (
+                    "HIGH"
+                    if request.get("vulnerable", False)
+                    else "NORMAL"
+                )
             })
 
         # Partial allocation
@@ -52,14 +57,16 @@ def allocate_resource(requests, resources):
                 "resource_type": resource_type,
                 "quantity": available,
                 "status": "Partially Allocated",
-                "priority": "HIGH"
-                if request.get("vulnerable", False)
-                else "NORMAL"
+                "priority": (
+                    "HIGH"
+                    if request.get("vulnerable", False)
+                    else "NORMAL"
+                )
             })
 
             resources[resource_type] = 0
 
-        # No resources available
+        # No resource available
         else:
             allocations.append({
                 "requester_id": request["requester_id"],
@@ -67,9 +74,11 @@ def allocate_resource(requests, resources):
                 "resource_type": resource_type,
                 "quantity": 0,
                 "status": "Pending",
-                "priority": "HIGH"
-                if request.get("vulnerable", False)
-                else "NORMAL"
+                "priority": (
+                    "HIGH"
+                    if request.get("vulnerable", False)
+                    else "NORMAL"
+                )
             })
 
     return allocations
